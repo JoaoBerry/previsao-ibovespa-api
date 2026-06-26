@@ -15,7 +15,7 @@ Uma aplicação Full-Stack MLOps que realiza a predição de tendências do índ
 - **DevOps:** GitHub Pages para hospedagem estática.
 
 ## 🚀 Como acessar
-Acesse o dashboard em tempo real aqui: [https://joaoberry.github.io/previsao-ibovespa-api/]
+Acesse o dashboard em tempo real aqui: [https://JoaoBerry.github.io/previsao-ibovespa-api/]
 
 ## 🛠️ Como rodar localmente (Desenvolvimento)
 1. Clone o repositório.
