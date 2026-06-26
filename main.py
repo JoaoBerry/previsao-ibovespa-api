@@ -10,10 +10,10 @@ from pydantic import BaseModel
 app = FastAPI(
     title="Ibovespa AI Predictor API",
     description="API para predição de tendência do índice Ibovespa usando Machine Learning",
-    version="1.0.0"
+    version="1.1.0"
 )
 
-# Liberação do CORS para que o GitHub Pages consiga fazer requisições sem bloqueios de segurança
+# Liberação do CORS para o GitHub Pages
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -45,29 +45,46 @@ def home():
         "modelo_carregado": modelo is not None
     }
 
-# 5. Rota Automatizada: Coleta de dados reais da B3 via Yahoo Finance
+# 5. Rota Automatizada: Coleta de dados reais e histórico para o Gráfico
 @app.get("/dados-reais")
 def obter_dados_reais():
     try:
         # Busca o histórico recente do mini índice do Ibovespa (^BVSP)
         ticker = yf.Ticker("^BVSP")
-        df = ticker.history(period="100d") # Puxa dias suficientes para calcular a média de 50
+        df = ticker.history(period="120d") # Dias extras para garantir o cálculo das médias estáveis
 
         if df.empty or len(df) < 50:
             raise HTTPException(status_code=500, detail="Histórico de dados insuficiente no Yahoo Finance.")
 
-        # Calcula os indicadores técnicos com base nos fechamentos diários
+        # Calcula os indicadores técnicos
         df['MMA_20'] = df['Close'].rolling(window=20).mean()
         df['MMA_50'] = df['Close'].rolling(window=50).mean()
 
-        # Pega os valores válidos mais recentes (última linha)
-        ultima_linha = df.dropna().iloc[-1]
+        # Remove linhas com valores nulos (gerados pelo rolling inicial)
+        df_limpo = df.dropna()
+
+        # Pega a linha mais recente do mercado (para os inputs do simulador)
+        ultima_linha = df_limpo.iloc[-1]
+
+        # Pega os últimos 30 registros para gerar a linha temporal do gráfico
+        df_historico = df_limpo.tail(30)
+
+        # Estrutura a lista histórica de forma simples para o JavaScript ler
+        historico_grafico = []
+        for index, row in df_historico.iterrows():
+            historico_grafico.append({
+                "data": index.strftime("%d/%m"), # Formato simplificado (Dia/Mês)
+                "fechamento": round(float(row['Close']), 2),
+                "mma_20": round(float(row['MMA_20']), 2),
+                "mma_50": round(float(row['MMA_50']), 2)
+            })
 
         return {
             "data": ultima_linha.name.strftime("%Y-%m-%d"),
             "fechamento_atual": float(ultima_linha['Close']),
             "mma_20": float(ultima_linha['MMA_20']),
-            "mma_50": float(ultima_linha['MMA_50'])
+            "mma_50": float(ultima_linha['MMA_50']),
+            "historico": historico_grafico # <- Nova lista enviada em lote!
         }
 
     except Exception as e:
@@ -80,16 +97,13 @@ def predict(dados: PrevisaoInput):
         raise HTTPException(status_code=503, detail="Modelo preditivo indisponível no servidor.")
 
     try:
-        # Organiza os inputs no formato de matriz bidimensional exigido pelo Scikit-Learn
         features = np.array([[dados.mma_20, dados.mma_50]])
 
-        # Executa a predição da tendência (0 para BAIXA, 1 para ALTA)
+        # Executa a predição da tendência
         predicao = int(modelo.predict(features)[0])
 
-        # Calcula a probabilidade associada a cada classe ([prob_baixa, prob_alta])
+        # Calcula a probabilidade associada a cada classe
         probabilidades = modelo.predict_proba(features)[0]
-
-        # Extrai a maior probabilidade (a confiança que o modelo tem na direção escolhida)
         confianca = float(max(probabilidades))
 
         return {
