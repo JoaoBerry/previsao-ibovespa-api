@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ibovespa AI Predictor 📈</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen font-sans flex flex-col justify-between">
+
+    <header class="border-b border-gray-800 bg-gray-950/50 backdrop-blur p-5">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-wider text-emerald-400">IBOVESPA <span class="text-white font-light">MLES</span></h1>
+            <span class="px-3 py-1 text-xs font-semibold text-emerald-400 bg-emerald-500/10 rounded-full border border-emerald-500/20 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> API Conectada
+            </span>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-6 w-full flex-grow flex flex-col justify-center">
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+            
+            <div class="bg-gray-950/40 border border-gray-800 p-6 rounded-2xl shadow-xl backdrop-blur">
+                <h2 class="text-lg font-semibold mb-4 text-gray-300">Simulador de Médias Móveis</h2>
+                <p class="text-sm text-gray-400 mb-6">Insira os valores das médias móveis do Ibovespa para consultar a tomada de decisão do modelo de Inteligência Artificial.</p>
+                
+                <form id="predict-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Média Móvel de 20 Dias (MMA_20)</label>
+                        <input type="number" id="mma20" required step="any" placeholder="Ex: 128500" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Média Móvel de 50 Dias (MMA_50)</label>
+                        <input type="number" id="mma50" required step="any" placeholder="Ex: 125000" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors">
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-gray-950 font-semibold py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20 active:scale-[0.98]">
+                        Executar Predição Inteligente
+                    </button>
+                </form>
+            </div>
+
+            <div id="result-card" class="bg-gray-950/20 border border-dashed border-gray-800 h-full min-h-[300px] rounded-2xl flex flex-col items-center justify-center text-center p-6 transition-all duration-500">
+                <div id="result-placeholder">
+                    <div class="text-4xl mb-3">🔮</div>
+                    <p class="text-gray-400 font-medium">Aguardando parâmetros...</p>
+                    <p class="text-xs text-gray-600 mt-1">Preencha as médias ao lado e clique em executar.</p>
+                </div>
+
+                <div id="result-content" class="hidden w-full">
+                    <span class="text-xs font-semibold uppercase tracking-widest text-gray-400">Tendência Detectada</span>
+                    <div id="result-badge" class="text-5xl font-black my-4 tracking-tight transition-all">
+                        ALTA
+                    </div>
+                    <div class="w-full h-[1px] bg-gray-800 my-4"></div>
+                    <p class="text-xs text-gray-500">Código retornado pelo modelo RandomForest: <span id="result-code" class="font-mono bg-gray-800 px-1.5 py-0.5 rounded text-gray-300">1</span></p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="text-center p-4 text-xs text-gray-600 border-t border-gray-800/50">
+        Ibovespa Machine Learning Predictor Portfolio Project
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
