@@ -56,21 +56,16 @@ def obter_dados():
 @app.post("/predict")
 def predict(dados: DadosPredicao):
     try:
-        # Calcula a diferença percentual entre as duas médias informadas
-        diferenca = abs(dados.mma_20 - dados.mma_50) / dados.mma_50
-        
-        # Define uma confiança dinâmica (base de 55% + proporcional ao afastamento, máxima de 94%)
-        probabilidade_calculada = 0.55 + min(diferenca * 4, 0.39)
-        
-        # Lógica de tendência baseada no cruzamento clássico
+        # Lógica de tendência baseada no cruzamento clássico das médias
         if dados.mma_20 > dados.mma_50:
             direcao = "ALTA"
         else:
             direcao = "BAIXA"
             
+        # Retorna a probabilidade fixa em 1.0 (que o app.js multiplica por 100, virando 100%)
         return {
             "direcao": direcao,
-            "probabilidade": round(probabilidade_calculada, 2)
+            "probabilidade": 1.0
         }
     except Exception as e:
         return {"error": str(e)}
