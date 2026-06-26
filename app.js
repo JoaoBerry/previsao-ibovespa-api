@@ -1,41 +1,37 @@
 const API_BASE_URL = 'https://previsao-ibovespa-api.onrender.com';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Ações rápidas (Interface principal)
     acordarServidor();
-    // Inicia o carregamento com a estratégia de retry
-    carregarDadosIniciais();
-    carregarBacktest();
     configurarFormulario();
+    
+    // 2. Carregamento de dados (Interface de indicadores)
+    carregarDadosIniciais();
+    
+    // 3. Carregamento pesado (Backtest - Processado de forma assíncrona)
+    // Não usamos 'await' aqui para não travar a execução do resto do script
+    carregarBacktest();
 });
 
-// Função para enviar uma requisição leve e "acordar" o servidor
+// Aquece o servidor
 async function acordarServidor() {
-    try {
-        await fetch(`${API_BASE_URL}/`);
-    } catch (error) {
-        console.log("Servidor em fase de inicialização...");
-    }
+    fetch(`${API_BASE_URL}/`).catch(() => console.log("Servidor em repouso..."));
 }
 
-// Função robusta de busca (Retry Logic)
-async function fetchComRetry(url, tentativas = 10) {
-    for (let i = 0; i < tentativas; i++) {
-        try {
-            const res = await fetch(url);
-            if (res.ok) return await res.json();
-            throw new Error('API não respondeu com sucesso');
-        } catch (e) {
-            console.log(`Tentativa ${i + 1} de ${tentativas}...`);
-            await new Promise(resolve => setTimeout(resolve, 5000)); // Aguarda 5s entre tentativas
-        }
-    }
-    throw new Error('API indisponível após várias tentativas');
+// Busca com Timeout para evitar travamentos infinitos
+async function fetchWithTimeout(url, options = {}, timeout = 30000) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(id);
+    return response;
 }
 
 async function carregarDadosIniciais() {
     const statusTag = document.getElementById('api-status');
     try {
-        const dados = await fetchComRetry(`${API_BASE_URL}/dados-reais`);
+        const res = await fetchWithTimeout(`${API_BASE_URL}/dados-reais`);
+        const dados = await res.json();
         
         document.getElementById('mma20').value = Math.round(dados.mma_20);
         document.getElementById('mma50').value = Math.round(dados.mma_50);
@@ -45,33 +41,38 @@ async function carregarDadosIniciais() {
 
         if (dados.historico) renderizarGraficoHistorico(dados.historico);
     } catch (e) {
-        statusTag.textContent = 'Erro de Conexão';
+        statusTag.textContent = 'Aguardando servidor...';
     }
 }
 
 async function carregarBacktest() {
     const container = document.getElementById('container-grafico-backtest');
+    
     try {
-        const dados = await fetchComRetry(`${API_BASE_URL}/backtest`);
+        // Tentativa única, mas otimizada
+        const res = await fetchWithTimeout(`${API_BASE_URL}/backtest`);
+        if (!res.ok) throw new Error();
+        const dados = await res.json();
         
-        // Remove animação de carregamento
+        // Remove animação de loading apenas quando chegar os dados
         document.querySelectorAll('[id^="card-"]').forEach(el => el.classList.remove('animate-pulse'));
 
+        // Atualiza Cards
         document.getElementById('card-acuracia').innerHTML = `
             <span class="text-slate-500 text-[10px] font-bold tracking-wider uppercase">Acurácia da IA</span>
             <div class="text-xl font-bold text-blue-400 mt-1">${(dados.acuracia_backtest * 100).toFixed(1)}%</div>`;
         
         document.getElementById('card-retorno-ia').innerHTML = `
-            <span class="text-slate-500 text-[10px] font-bold tracking-wider uppercase">Retorno Estratégia IA</span>
+            <span class="text-slate-500 text-[10px] font-bold tracking-wider uppercase">Retorno IA</span>
             <div class="text-xl font-bold text-emerald-400 mt-1">${dados.retorno_modelo_pct}%</div>`;
             
         document.getElementById('card-retorno-mercado').innerHTML = `
-            <span class="text-slate-500 text-[10px] font-bold tracking-wider uppercase">Retorno Ibovespa</span>
+            <span class="text-slate-500 text-[10px] font-bold tracking-wider uppercase">Retorno Ibov</span>
             <div class="text-xl font-bold text-slate-300 mt-1">${dados.retorno_bh_pct}%</div>`;
 
         renderizarGraficoBacktest(dados.evolucao);
     } catch (e) {
-        container.innerHTML = `<p class="text-rose-500 text-xs">Erro ao carregar simulação histórica após múltiplas tentativas.</p>`;
+        container.innerHTML = `<p class="text-rose-500 text-xs p-4">Simulação indisponível no momento.</p>`;
     }
 }
 
@@ -89,9 +90,8 @@ function configurarFormulario() {
         });
         const resultado = await res.json();
         
-        const container = document.getElementById('resultado-predicao');
-        container.innerHTML = `
-            <div class="text-center animate-fade-in">
+        document.getElementById('resultado-predicao').innerHTML = `
+            <div class="text-center animate-fade-in p-4">
                 <span class="text-4xl block">${resultado.predicao === 1 ? '🚀' : '📉'}</span>
                 <h3 class="text-xl font-bold ${resultado.predicao === 1 ? 'text-emerald-400' : 'text-rose-400'} mt-2">
                     Tendência de ${resultado.direcao}
@@ -103,20 +103,22 @@ function configurarFormulario() {
 }
 
 function renderizarGraficoHistorico(historico) {
-    const opcoes = {
+    const container = document.getElementById('container-grafico');
+    container.innerHTML = '';
+    new ApexCharts(container, {
         series: [{ name: 'Preço', data: historico.map(h => h.fechamento) }],
         chart: { type: 'area', height: 320, background: 'transparent', toolbar: { show: false } },
         colors: ['#3b82f6'],
         stroke: { curve: 'smooth', width: 2 },
-        fill: { type: 'gradient', gradient: { opacityFrom: 0.3, opacityTo: 0 } },
-        xaxis: { categories: historico.map(h => h.data) },
-        theme: { mode: 'dark' }
-    };
-    new ApexCharts(document.getElementById('container-grafico'), opcoes).render();
+        theme: { mode: 'dark' },
+        xaxis: { categories: historico.map(h => h.data) }
+    }).render();
 }
 
 function renderizarGraficoBacktest(evolucao) {
-    const opcoes = {
+    const container = document.getElementById('container-grafico-backtest');
+    container.innerHTML = '';
+    new ApexCharts(container, {
         series: [
             { name: 'IA', data: evolucao.map(e => e.estrategia) },
             { name: 'Ibovespa', data: evolucao.map(e => e.buy_and_hold) }
@@ -126,8 +128,5 @@ function renderizarGraficoBacktest(evolucao) {
         stroke: { curve: 'smooth', width: 3 },
         theme: { mode: 'dark' },
         xaxis: { categories: evolucao.map(e => e.data) }
-    };
-    const container = document.getElementById('container-grafico-backtest');
-    container.innerHTML = '';
-    new ApexCharts(container, opcoes).render();
+    }).render();
 }
