@@ -5,7 +5,7 @@ import yfinance as yf
 
 app = FastAPI()
 
-# Configuração de CORS permissiva para o seu site
+# Configuração de CORS ultra-permissiva para resolver o bloqueio do navegador
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -24,8 +24,10 @@ def home():
 def obter_dados():
     try:
         ticker = yf.Ticker("^BVSP")
+        # period="1mo" é rápido e não estoura limites de API
         df = ticker.history(period="1mo")
-        if df.empty: return {"error": "Dados indisponíveis"}
+        if df.empty: 
+            return {"error": "Dados indisponíveis"}
         
         historico = [{"data": i.strftime("%Y-%m-%d"), "fechamento": float(r['Close'])} for i, r in df.iterrows()]
         return {
@@ -33,12 +35,14 @@ def obter_dados():
             "mma_50": float(df['Close'].rolling(50).mean().iloc[-1]),
             "historico": historico
         }
-    except Exception:
-        return {"error": "Erro interno"}
+    except Exception as e:
+        return {"error": f"Erro interno: {str(e)}"}
 
 @app.get("/backtest")
 def obter_backtest():
     try:
-        return requests.get(BACKTEST_URL, timeout=10).json()
-    except:
-        return {"error": "Erro ao buscar backtest"}
+        # Busca direta do arquivo JSON no seu GitHub
+        response = requests.get(BACKTEST_URL, timeout=10)
+        return response.json()
+    except Exception as e:
+        return {"error": f"Erro ao buscar backtest: {str(e)}"}
