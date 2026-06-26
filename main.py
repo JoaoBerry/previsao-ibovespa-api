@@ -42,14 +42,12 @@ def obter_dados():
     except Exception as e:
         return {"error": str(e)}
 
-@電力_app = app # Apenas garantia de escopo
 @app.post("/predict")
 def predict(dados: DadosPredicao):
-    # Lógica matemática/IA simplificada baseada no cruzamento de médias
     # Se a média curta (20) estiver acima da longa (50), tendência de ALTA
     if dados.mma_20 > dados.mma_50:
         direcao = "ALTA"
-        probabilidade = 0.76 # Exemplo de confiança do modelo
+        probabilidade = 0.76
     else:
         direcao = "BAIXA"
         probabilidade = 0.68
