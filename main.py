@@ -7,14 +7,14 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-# Importando a função original caso o arquivo de cache falhe
+# Importando a função original como fallback
 from backtest import rodar_backtest
 
 # 1. Configuração Inicial do FastAPI e CORS
 app = FastAPI(
     title="Ibovespa AI Predictor API",
     description="API para predição de tendência do índice Ibovespa com cache de backtesting",
-    version="1.4.0"
+    version="1.5.0"
 )
 
 app.add_middleware(
@@ -37,7 +37,8 @@ class PrevisaoInput(BaseModel):
     mma_20: float
     mma_50: float
 
-# 4. Rota de Health Check
+# 4. Rota Base de Verificação (Health Check)
+# Adicionado suporte explícito para HEAD (usado pelo UptimeRobot)
 @app.api_route("/", methods=["GET", "HEAD"], include_in_schema=False)
 def home():
     return {"status": "API Operacional", "modelo_carregado": modelo is not None}
@@ -91,9 +92,9 @@ def predict(dados: PrevisaoInput):
 @app.get("/backtest")
 def obter_backtest():
     try:
-        # Tenta ler o resultado gerado pelo GitHub Actions
+        # Tenta ler o arquivo gerado pelo GitHub Actions
         with open('backtest_results.json', 'r') as f:
             return json.load(f)
     except FileNotFoundError:
-        # Caso o arquivo ainda não exista, roda o cálculo em tempo real
+        # Fallback: executa em tempo real se o arquivo não existir
         return rodar_backtest(periodo_anos=1)
