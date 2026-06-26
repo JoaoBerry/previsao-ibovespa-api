@@ -27,6 +27,7 @@ O projeto foi desenhado seguindo as melhores práticas de engenharia de machine 
 
 ## 📂 Estrutura do Projeto
 
+```text
 previsao-ibovespa-api/
 ├── frontend/
 │   ├── index.html        # Interface visual do Dashboard
@@ -35,6 +36,7 @@ previsao-ibovespa-api/
 │   └── modelo_ibov.pkl   # Arquivo físico do modelo RandomForest
 ├── main.py               # Servidor Backend FastAPI com as rotas
 └── README.md             # Documentação do projeto
+```
 
 ---
 
@@ -44,18 +46,24 @@ previsao-ibovespa-api/
 
 Para rodar este projeto localmente, clone o repositório e instale as dependências listadas abaixo:
 
-git clone https://github.com/seu-usuario/previsao-ibovespa-api.git
+```bash
+git clone [https://github.com/JoaoBerry/previsao-ibovespa-api.git](https://github.com/seu-usuario/previsao-ibovespa-api.git)
 cd previsao-ibovespa-api
 pip install fastapi uvicorn joblib numpy scikit-learn yfinance requests
+```
 
 ### 2. Iniciar o Servidor da API (Backend)
 
 Inicie o servidor local através do Uvicorn executando o seguinte comando no terminal:
 
+```bash
 uvicorn main:app --reload
+```
 
-A API estará rodando ativamente no endereço: http://127.0.0.1:8000
+A API estará rodando ativamente no endereço: `http://127.0.0.1:8000`
 
 ### 3. Abrir o Dashboard (Frontend)
 
-Com o backend ligado, abra o arquivo "frontend/index.html" utilizando a extensão Live Server do VS Code ou executando o arquivo diretamente no navegador de sua preferência. A aplicação carregará e consumirá automaticamente os dados atualizados do mercado financeiro.
+Com o backend ligado, abra o arquivo `frontend/index.html` utilizando a extensão **Live Server** do VS Code ou executando o arquivo diretamente no navegador de sua preferência. A aplicação carregará e consumirá automaticamente os dados atualizados do mercado financeiro.
+
+<img width="1375" height="1266" alt="Captura de tela 2026-06-25 212208" src="https://github.com/user-attachments/assets/5b81ef34-b4f0-4fdf-b265-a00c784a7460" />
