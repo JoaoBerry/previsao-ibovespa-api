@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ibovespa AI Predictor</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -30,8 +31,9 @@
         </div>
     </header>
 
-    <main class="flex-1 max-w-6xl w-full mx-auto p-6 flex flex-col justify-center">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+    <main class="flex-1 max-w-6xl w-full mx-auto p-6 space-y-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
             
             <div class="bg-[#1e293b]/50 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
                 <div>
@@ -88,8 +90,18 @@
                     </p>
                 </div>
             </div>
-
         </div>
+
+        <div class="bg-[#1e293b]/40 border border-slate-800 rounded-2xl p-6 shadow-xl">
+            <div class="mb-4">
+                <h3 class="text-base font-bold text-slate-200">Histórico de Tendências e Indicadores</h3>
+                <p class="text-xs text-slate-400">Acompanhamento visual dos cruzamentos entre a média móvel curta de 20 dias e a longa de 50 dias na B3.</p>
+            </div>
+            <div id="container-grafico" class="min-h-[320px] flex items-center justify-center">
+                <p class="text-xs text-slate-600 animate-pulse">Carregando série temporal do mercado financeiro...</p>
+            </div>
+        </div>
+
     </main>
 
     <footer class="py-4 border-t border-slate-900 text-center text-[10px] text-slate-600 tracking-wide">
