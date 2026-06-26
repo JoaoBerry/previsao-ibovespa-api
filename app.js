@@ -1,81 +1,58 @@
-// app.js completo com lógica de gráfico Chart.js
-
-let meuGrafico = null; // Variável para controlar o gráfico e evitar erro de 'canvas in use'
+// Configuração da URL da sua API no Render
+const API_BASE_URL = "https://previsao-ibovespa-api.onrender.com";
 
 document.addEventListener('DOMContentLoaded', () => {
+    verificarConexao();
     configurarFormulario();
     carregarDadosIniciais();
 });
 
-function configurarFormulario() {
-    console.log("Formulário configurado.");
-    const btnPredict = document.getElementById('btn-predict');
-    if (btnPredict) {
-        btnPredict.addEventListener('click', () => {
-            console.log("Executando Predição...");
-            // ... lógica de predição ...
-        });
+async function verificarConexao() {
+    const statusBanner = document.getElementById('status-banner'); // Ajuste o ID conforme seu HTML
+    try {
+        const response = await fetch(`${API_BASE_URL}/`);
+        if (response.ok) {
+            statusBanner.innerText = "ONLINE - API Conectada";
+            statusBanner.style.color = "#10b981"; // Verde
+        }
+    } catch (error) {
+        statusBanner.innerText = "Conectando à API...";
+        statusBanner.style.color = "#f59e0b"; // Amarelo
     }
 }
 
 async function carregarDadosIniciais() {
     try {
-        // Busca o JSON que o GitHub Actions gerou e o Render está lendo
-        const response = await fetch('https://previsao-ibovespa-api.onrender.com/backtest');
+        const response = await fetch(`${API_BASE_URL}/dados-reais`);
         const dados = await response.json();
-        renderizarGraficoBacktest(dados);
+        
+        if (!dados.error) {
+            renderizarGraficoBacktest(dados);
+        }
     } catch (error) {
-        console.error("Erro ao carregar dados iniciais:", error);
+        console.error("Erro ao conectar na API:", error);
+    }
+}
+
+function configurarFormulario() {
+    const btn = document.getElementById('btn-predict');
+    if (btn) {
+        btn.addEventListener('click', async () => {
+            const mma20 = document.getElementById('mma_20').value;
+            const mma50 = document.getElementById('mma_50').value;
+            
+            const response = await fetch(`${API_BASE_URL}/predict`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mma_20: parseFloat(mma20), mma_50: parseFloat(mma50) })
+            });
+            const resultado = await response.json();
+            alert("Predição: " + resultado.direcao);
+        });
     }
 }
 
 function renderizarGraficoBacktest(dados) {
-    const ctx = document.getElementById('historicoGrafico').getContext('2d');
-    
-    // Destrói o gráfico anterior se ele existir
-    if (meuGrafico) {
-        meuGrafico.destroy();
-    }
-
-    // Estrutura os dados para o Chart.js
-    const labels = dados.evolucao.map(d => d.data);
-    const dataEstrategia = dados.evolucao.map(d => d.estrategia);
-    const dataBH = dados.evolucao.map(d => d.buy_and_hold);
-
-    // Cria o gráfico
-    meuGrafico = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Sinal IBOVESPA MLE',
-                    data: dataEstrategia,
-                    borderColor: '#10b981', // Verde Esmeralda
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                },
-                {
-                    label: 'Buy & Hold',
-                    data: dataBH,
-                    borderColor: '#64748b', // Slate 500
-                    borderDash: [5, 5],
-                    fill: false,
-                    tension: 0.4
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: { grid: { color: 'rgba(255, 255, 255, 0.05)' } },
-                y: { grid: { color: 'rgba(255, 255, 255, 0.05)' } }
-            },
-            plugins: {
-                legend: { labels: { color: '#f1f5f9' } } // Slate 100
-            }
-        }
-    });
+    console.log("Dados carregados para o gráfico:", dados);
+    // Aqui sua lógica de biblioteca de gráficos (Chart.js ou similar)
 }
