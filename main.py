@@ -6,11 +6,14 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+# Importando o nosso novo módulo de simulação
+from backtest import rodar_backtest
+
 # 1. Configuração Inicial do FastAPI e CORS
 app = FastAPI(
     title="Ibovespa AI Predictor API",
     description="API para predição de tendência do índice Ibovespa usando Machine Learning",
-    version="1.2.0"
+    version="1.3.0"
 )
 
 # Liberação do CORS para o GitHub Pages
@@ -100,3 +103,11 @@ def predict(dados: PrevisaoInput):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro no processamento: {str(e)}")
+
+# 7. Rota de Avaliação Histórica (Backtesting)
+@app.get("/backtest")
+def obter_backtest():
+    resultado = rodar_backtest(periodo_anos=1)
+    if "erro" in resultado:
+        raise HTTPException(status_code=500, detail=resultado["erro"])
+    return resultado
