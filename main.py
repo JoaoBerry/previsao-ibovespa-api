@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 import yfinance as yf
 
 app = FastAPI()
 
-# Permissão total para testes - CORS aberto para qualquer origem
+# CORS 100% liberado para evitar bloqueios no GitHub Pages
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -12,6 +13,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Modelo de dados que a rota /predict espera receber do JavaScript
+class DadosPredicao(BaseModel):
+    mma_20: float
+    mma_50: float
 
 @app.get("/")
 def home():
@@ -22,7 +28,33 @@ def obter_dados():
     try:
         ticker = yf.Ticker("^BVSP")
         df = ticker.history(period="1mo")
+        if df.empty:
+            return {"error": "Dados indisponíveis"}
+        
         historico = [{"data": i.strftime("%Y-%m-%d"), "fechamento": float(r['Close'])} for i, r in df.iterrows()]
-        return {"historico": historico}
+        
+        # Valores atuais para preenchimento automático
+        return {
+            "mma_20": float(df['Close'].rolling(20).mean().iloc[-1]),
+            "mma_50": float(df['Close'].rolling(50).mean().iloc[-1]),
+            "historico": historico
+        }
     except Exception as e:
         return {"error": str(e)}
+
+@電力_app = app # Apenas garantia de escopo
+@app.post("/predict")
+def predict(dados: DadosPredicao):
+    # Lógica matemática/IA simplificada baseada no cruzamento de médias
+    # Se a média curta (20) estiver acima da longa (50), tendência de ALTA
+    if dados.mma_20 > dados.mma_50:
+        direcao = "ALTA"
+        probabilidade = 0.76 # Exemplo de confiança do modelo
+    else:
+        direcao = "BAIXA"
+        probabilidade = 0.68
+
+    return {
+        "direcao": direcao,
+        "probabilidade": probabilidade
+    }

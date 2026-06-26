@@ -25,17 +25,15 @@ async function carregarDadosIniciais() {
         const dados = await response.json();
         
         if (dados && !dados.error) {
-            // 1. Renderiza o gráfico com o histórico
             if (dados.historico) {
                 renderizarGrafico(dados.historico);
             }
             
-            // 2. PREENCHIMENTO E SIMULAÇÃO AUTOMÁTICA
+            // Preenche os inputs e roda a simulação automática
             if (dados.mma_20 && dados.mma_50) {
                 document.getElementById('mma20').value = dados.mma_20.toFixed(2);
                 document.getElementById('mma50').value = dados.mma_50.toFixed(2);
                 
-                // Executa a predição automaticamente usando os valores reais recebidos
                 executarPredicaoReal(dados.mma_20, dados.mma_50);
             }
         }
@@ -60,17 +58,9 @@ function renderizarGrafico(historico) {
     new ApexCharts(container, options).render();
 }
 
-// Função centralizada para processar e exibir a predição na tela
-async function executarPredicaoReal(mma20Val, mma50Val) {
+async function ejecutarPredicaoReal(mma20Val, mma50Val) {
     const resultadoDiv = document.getElementById('resultado-predicao');
     if (!resultadoDiv) return;
-
-    resultadoDiv.innerHTML = `
-        <div class="text-center space-y-2 animate-pulse">
-            <span class="text-3xl block">⚙️</span>
-            <h3 class="text-slate-300 font-bold">Calculando predição...</h3>
-        </div>
-    `;
 
     try {
         const response = await fetch(`${API_BASE_URL}/predict`, {
@@ -84,17 +74,17 @@ async function executarPredicaoReal(mma20Val, mma50Val) {
         const icone = resultado.direcao === "ALTA" ? "📈" : "📉";
 
         resultadoDiv.innerHTML = `
-            <div class="text-center space-y-3 animate-fade-in">
+            <div class="text-center space-y-3">
                 <span class="text-4xl block">${icone}</span>
                 <h3 class="text-xl font-black ${corTexto}">Tendência de ${resultado.direcao}</h3>
                 <p class="text-sm text-slate-300">Confiança do Modelo: <strong>${(resultado.probabilidade * 100).toFixed(0)}%</strong></p>
                 <p class="text-xs text-slate-500 max-w-[250px] mx-auto">
-                    Predição automática baseada nos dados atuais do mercado (MMA20 vs MMA50).
+                    Predição automática baseada nos dados atuais do mercado.
                 </p>
             </div>
         `;
     } catch (error) {
-        console.error("Erro na predição automática:", error);
+        console.error("Erro na predição:", error);
         resultadoDiv.innerHTML = `
             <div class="text-center space-y-2">
                 <span class="text-3xl block">❌</span>
@@ -104,7 +94,6 @@ async function executarPredicaoReal(mma20Val, mma50Val) {
     }
 }
 
-// Configura o formulário caso o usuário decida mudar os valores manualmente depois
 function configurarFormulario() {
     const form = document.getElementById('form-simulador');
     if (form) {
@@ -112,7 +101,7 @@ function configurarFormulario() {
             e.preventDefault();
             const mma20Val = parseFloat(document.getElementById('mma20').value);
             const mma50Val = parseFloat(document.getElementById('mma50').value);
-            executarPredicaoReal(mma20Val, mma50Val);
+            ejecutarPredicaoReal(mma20Val, mma50Val);
         });
     }
 }
