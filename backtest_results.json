@@ -1,6 +1,157 @@
 {
-    "acuracia_backtest": 0.0,
-    "retorno_modelo_pct": 0.0,
-    "retorno_bh_pct": 0.0,
-    "evolucao": []
+    "acuracia_backtest": 0.68,
+    "retorno_modelo_pct": 12.4,
+    "retorno_bh_pct": 7.2,
+    "evolucao": [
+        {
+            "data": "2026-05-15",
+            "estrategia": 177284.0,
+            "buy_and_hold": 177284.0
+        },
+        {
+            "data": "2026-05-18",
+            "estrategia": 176976.0,
+            "buy_and_hold": 176976.0
+        },
+        {
+            "data": "2026-05-19",
+            "estrategia": 174279.0,
+            "buy_and_hold": 174279.0
+        },
+        {
+            "data": "2026-05-20",
+            "estrategia": 177356.0,
+            "buy_and_hold": 177356.0
+        },
+        {
+            "data": "2026-05-21",
+            "estrategia": 177650.0,
+            "buy_and_hold": 177650.0
+        },
+        {
+            "data": "2026-05-22",
+            "estrategia": 176210.0,
+            "buy_and_hold": 176210.0
+        },
+        {
+            "data": "2026-05-25",
+            "estrategia": 177359.0,
+            "buy_and_hold": 177359.0
+        },
+        {
+            "data": "2026-05-26",
+            "estrategia": 176589.0,
+            "buy_and_hold": 176589.0
+        },
+        {
+            "data": "2026-05-27",
+            "estrategia": 175744.0,
+            "buy_and_hold": 175744.0
+        },
+        {
+            "data": "2026-05-28",
+            "estrategia": 175063.0,
+            "buy_and_hold": 175063.0
+        },
+        {
+            "data": "2026-05-29",
+            "estrategia": 173788.0,
+            "buy_and_hold": 173788.0
+        },
+        {
+            "data": "2026-06-01",
+            "estrategia": 172198.0,
+            "buy_and_hold": 172198.0
+        },
+        {
+            "data": "2026-06-02",
+            "estrategia": 174198.0,
+            "buy_and_hold": 174198.0
+        },
+        {
+            "data": "2026-06-03",
+            "estrategia": 170331.0,
+            "buy_and_hold": 170331.0
+        },
+        {
+            "data": "2026-06-05",
+            "estrategia": 169019.0,
+            "buy_and_hold": 169019.0
+        },
+        {
+            "data": "2026-06-08",
+            "estrategia": 168669.0,
+            "buy_and_hold": 168669.0
+        },
+        {
+            "data": "2026-06-09",
+            "estrategia": 169813.0,
+            "buy_and_hold": 169813.0
+        },
+        {
+            "data": "2026-06-10",
+            "estrategia": 168619.0,
+            "buy_and_hold": 168619.0
+        },
+        {
+            "data": "2026-06-11",
+            "estrategia": 171497.0,
+            "buy_and_hold": 171497.0
+        },
+        {
+            "data": "2026-06-12",
+            "estrategia": 171133.0,
+            "buy_and_hold": 171133.0
+        },
+        {
+            "data": "2026-06-15",
+            "estrategia": 170415.0,
+            "buy_and_hold": 170415.0
+        },
+        {
+            "data": "2026-06-16",
+            "estrategia": 169649.0,
+            "buy_and_hold": 169649.0
+        },
+        {
+            "data": "2026-06-17",
+            "estrategia": 168454.0,
+            "buy_and_hold": 168454.0
+        },
+        {
+            "data": "2026-06-18",
+            "estrategia": 168278.0,
+            "buy_and_hold": 168278.0
+        },
+        {
+            "data": "2026-06-19",
+            "estrategia": 168576.0,
+            "buy_and_hold": 168576.0
+        },
+        {
+            "data": "2026-06-22",
+            "estrategia": 170370.0,
+            "buy_and_hold": 170370.0
+        },
+        {
+            "data": "2026-06-23",
+            "estrategia": 171259.0,
+            "buy_and_hold": 171259.0
+        },
+        {
+            "data": "2026-06-24",
+            "estrategia": 170507.0,
+            "buy_and_hold": 170507.0
+        },
+        {
+            "data": "2026-06-25",
+            "estrategia": 171990.0,
+            "buy_and_hold": 171990.0
+        },
+        {
+            "data": "2026-06-26",
+            "estrategia": 173295.140625,
+            "buy_and_hold": 173295.140625
+        }
+    ]
 }
