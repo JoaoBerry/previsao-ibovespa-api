@@ -1,3 +1,4 @@
+# Script de automação de backtest
 name: Atualizar Backtest
 on:
   schedule:
