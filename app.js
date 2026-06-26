@@ -1,27 +1,23 @@
 const API_BASE_URL = "https://previsao-ibovespa-api.onrender.com";
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Inicializa a verificação de conexão
     verificarConexao();
-    configurarBotaoExecutar();
+    configurarFormulario();
 });
 
 async function verificarConexao() {
-    const statusBanner = document.getElementById('status-banner');
+    const statusBanner = document.getElementById('api-status'); // ID CORRIGIDO AQUI
     
     try {
         const response = await fetch(`${API_BASE_URL}/`);
         if (response.ok) {
-            if (statusBanner) {
-                statusBanner.innerText = "ONLINE - API Conectada";
-                statusBanner.style.color = "#10b981"; // Verde sucesso
-            }
-            // Conexão confirmada, agora carrega os dados
+            statusBanner.innerText = "ONLINE - API Conectada";
+            statusBanner.className = "px-3 py-1 text-xs font-semibold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+            
             carregarDadosIniciais();
         }
     } catch (error) {
-        console.error("API offline ou bloqueada pelo CORS:", error);
-        if (statusBanner) statusBanner.innerText = "Conectando à API...";
+        console.error("Erro de conexão:", error);
     }
 }
 
@@ -29,22 +25,19 @@ async function carregarDadosIniciais() {
     try {
         const response = await fetch(`${API_BASE_URL}/dados-reais`);
         const dados = await response.json();
-        
-        if (dados && !dados.error) {
-            console.log("Dados carregados com sucesso:", dados);
-            // Aqui você chamaria sua função de renderização de gráfico, ex:
-            // renderizarGrafico(dados);
-        }
+        console.log("Dados recebidos:", dados);
+        // Aqui você pode chamar suas funções de gráfico (ApexCharts)
     } catch (error) {
-        console.error("Erro ao buscar dados-reais:", error);
+        console.error("Erro ao carregar dados:", error);
     }
 }
 
-function configurarBotaoExecutar() {
-    const btn = document.getElementById('btn-predict');
-    if (btn) {
-        btn.addEventListener('click', () => {
-            alert("Modelo executando...");
+function configurarFormulario() {
+    const form = document.getElementById('form-simulador');
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert("Modelo processando...");
         });
     }
 }
