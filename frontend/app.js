@@ -1,5 +1,5 @@
 // URL base da sua API FastAPI
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = 'https://previsao-ibovespa-api.onrender.com/';
 
 // Elementos do DOM compartilhados
 const placeholder = document.getElementById('result-placeholder');
