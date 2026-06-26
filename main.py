@@ -91,10 +91,10 @@ def predict(dados: PrevisaoInput):
 # 7. Rota de Backtesting (Otimizada com Cache)
 @app.get("/backtest")
 def obter_backtest():
-    try:
-        # Tenta ler o arquivo gerado pelo GitHub Actions
-        with open('backtest_results.json', 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        # Fallback: executa em tempo real se o arquivo não existir
-        return rodar_backtest(periodo_anos=1)
+    # TESTE: Retorno fixo para testar a performance
+    return {
+        "acuracia_backtest": 0.75,
+        "retorno_modelo_pct": 12.5,
+        "retorno_bh_pct": 5.2,
+        "evolucao": [{"data": "2026-06-01", "estrategia": 170000, "buy_and_hold": 169000}]
+    }

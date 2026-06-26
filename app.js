@@ -46,9 +46,11 @@ async function carregarBacktest() {
         document.getElementById('card-retorno-mercado').innerHTML = `<div class="text-xl font-bold text-slate-300">${dados.retorno_bh_pct}%</div>`;
         
         renderizarGraficoBacktest(dados.evolucao);
-    } catch (e) {
-        container.innerHTML = `<p class="text-rose-500 text-xs p-4">Simulação indisponível no momento.</p>`;
-    }
+} catch (e) {
+    console.error("Erro na API:", e);
+    document.getElementById('card-acuracia').innerHTML = `<div class="text-xs text-rose-500">Erro de API</div>`;
+    container.innerHTML = `<p class="text-rose-500 text-xs">Simulação indisponível.</p>`;
+}
 }
 
 // ... manter as outras funções (configurarFormulario, renderizarGrafico, etc) exatamente como estão.
