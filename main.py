@@ -1,18 +1,19 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+import os
 import joblib
 import numpy as np
 import yfinance as yf
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-# Inicializa o FastAPI
+# 1. Configuração Inicial do FastAPI e CORS
 app = FastAPI(
-    title="Ibovespa Predictor API 📈",
-    description="API para prever a tendência do Ibovespa usando Machine Learning.",
-    version="1.1.0"
+    title="Ibovespa AI Predictor API",
+    description="API para predição de tendência do índice Ibovespa usando Machine Learning",
+    version="1.0.0"
 )
 
-# Configuração do CORS para permitir a comunicação com o Frontend
+# Liberação do CORS para que o GitHub Pages consiga fazer requisições sem bloqueios de segurança
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,68 +22,83 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Carrega o modelo do arquivo .pkl
+# 2. Carregamento do Modelo de Machine Learning Treinado
+MODEL_PATH = os.path.join("modelos", "modelo_ibov.pkl")
+
 try:
-    modelo = joblib.load('modelos/modelo_ibov.pkl')
+    modelo = joblib.load(MODEL_PATH)
     print("🚀 Central de Inteligência: Modelo carregado com sucesso!")
 except Exception as e:
-    print(f"❌ Erro crítico ao carregar o modelo: {e}")
+    print(f"⚠️ Erro crítico ao carregar o modelo em '{MODEL_PATH}': {e}")
     modelo = None
 
-# Schema de Entrada para a predição manual
-class DadosMercado(BaseModel):
+# 3. Modelagem dos Dados de Entrada (Pydantic)
+class PrevisaoInput(BaseModel):
     mma_20: float
     mma_50: float
 
+# 4. Rota Base de Verificação (Health Check)
 @app.get("/")
 def home():
     return {
-        "status": "API Operacional", 
+        "status": "API Operacional",
         "modelo_carregado": modelo is not None
     }
 
-# NOVA ROTA: Busca dados reais do Yahoo Finance e calcula as médias móveis atuais
+# 5. Rota Automatizada: Coleta de dados reais da B3 via Yahoo Finance
 @app.get("/dados-reais")
 def obter_dados_reais():
     try:
+        # Busca o histórico recente do mini índice do Ibovespa (^BVSP)
         ticker = yf.Ticker("^BVSP")
-        dados = ticker.history(period="3mo")
-        
-        if dados.empty:
-            raise HTTPException(status_code=502, detail="Não foi possível obter dados do Yahoo Finance.")
-        
-        # Calcula as médias móveis baseadas no fechamento
-        dados['MMA_20'] = dados['Close'].rolling(window=20).mean()
-        dados['MMA_50'] = dados['Close'].rolling(window=50).mean()
-        
-        # Pega o registro mais recente
-        ultima_linha = dados.iloc[-1]
-        
-        return {
-            "status": "success",
-            "data": ultima_linha.name.strftime('%d/%m/%Y'),
-            "mma_20": round(float(ultima_linha['MMA_20']), 2),
-            "mma_50": round(float(ultima_linha['MMA_50']), 2)
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro interno ao processar dados de mercado: {str(e)}")
+        df = ticker.history(period="100d") # Puxa dias suficientes para calcular a média de 50
 
-# Rota de Predição
-@app.post("/predict")
-def prever_tendencia(dados: DadosMercado):
-    if not modelo:
-        raise HTTPException(status_code=500, detail="O modelo de ML não está disponível no servidor.")
-    
-    try:
-        input_data = np.array([[dados.mma_20, dados.mma_50]])
-        predicao = modelo.predict(input_data)
-        classe_resultado = int(predicao[0])
-        tendencia = "Alta" if classe_resultado == 1 else "Baixa"
-        
+        if df.empty or len(df) < 50:
+            raise HTTPException(status_code=500, detail="Histórico de dados insuficiente no Yahoo Finance.")
+
+        # Calcula os indicadores técnicos com base nos fechamentos diários
+        df['MMA_20'] = df['Close'].rolling(window=20).mean()
+        df['MMA_50'] = df['Close'].rolling(window=50).mean()
+
+        # Pega os valores válidos mais recentes (última linha)
+        ultima_linha = df.dropna().iloc[-1]
+
         return {
-            "status": "success",
-            "codigo_predicao": classe_resultado,
-            "tendencia_prevista": tendencia
+            "data": ultima_linha.name.strftime("%Y-%m-%d"),
+            "fechamento_atual": float(ultima_linha['Close']),
+            "mma_20": float(ultima_linha['MMA_20']),
+            "mma_50": float(ultima_linha['MMA_50'])
         }
+
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Erro ao processar a previsão: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erro ao coletar dados do mercado: {str(e)}")
+
+# 6. Rota do Simulador: Recebe as médias móveis e executa o Random Forest
+@app.post("/predict")
+def predict(dados: PrevisaoInput):
+    if modelo is None:
+        raise HTTPException(status_code=503, detail="Modelo preditivo indisponível no servidor.")
+
+    try:
+        # Organiza os inputs no formato de matriz bidimensional exigido pelo Scikit-Learn
+        features = np.array([[dados.mma_20, dados.mma_50]])
+
+        # Executa a predição da tendência (0 para BAIXA, 1 para ALTA)
+        predicao = int(modelo.predict(features)[0])
+
+        # Calcula a probabilidade associada a cada classe ([prob_baixa, prob_alta])
+        probabilidades = modelo.predict_proba(features)[0]
+
+        # Extrai a maior probabilidade (a confiança que o modelo tem na direção escolhida)
+        confianca = float(max(probabilidades))
+
+        return {
+            "mma_20": dados.mma_20,
+            "mma_50": dados.mma_50,
+            "predicao": predicao,
+            "direcao": "ALTA" if predicao == 1 else "BAIXA",
+            "probabilidade": confianca
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro interno no processamento do modelo: {str(e)}")
