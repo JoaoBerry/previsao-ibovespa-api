@@ -29,11 +29,12 @@ async function carregarDadosIniciais() {
                 renderizarGrafico(dados.historico);
             }
             
-            // Preenche os inputs e roda a simulação automática
+            // Preenche os inputs e roda a simulação AUTOMÁTICA
             if (dados.mma_20 && dados.mma_50) {
                 document.getElementById('mma20').value = dados.mma_20.toFixed(2);
                 document.getElementById('mma50').value = dados.mma_50.toFixed(2);
                 
+                // Nome da função corrigido para garantir a chamada automática
                 executarPredicaoReal(dados.mma_20, dados.mma_50);
             }
         }
@@ -58,7 +59,8 @@ function renderizarGrafico(historico) {
     new ApexCharts(container, options).render();
 }
 
-async function ejecutarPredicaoReal(mma20Val, mma50Val) {
+// === FUNÇÃO DE PREDIÇÃO COM NOME CORRIGIDO ===
+async function executarPredicaoReal(mma20Val, mma50Val) {
     const resultadoDiv = document.getElementById('resultado-predicao');
     if (!resultadoDiv) return;
 
@@ -74,7 +76,7 @@ async function ejecutarPredicaoReal(mma20Val, mma50Val) {
         const icone = resultado.direcao === "ALTA" ? "📈" : "📉";
 
         resultadoDiv.innerHTML = `
-            <div class="text-center space-y-3">
+            <div class="text-center space-y-3 animate-fade-in">
                 <span class="text-4xl block">${icone}</span>
                 <h3 class="text-xl font-black ${corTexto}">Tendência de ${resultado.direcao}</h3>
                 <p class="text-sm text-slate-300">Confiança do Modelo: <strong>${(resultado.probabilidade * 100).toFixed(0)}%</strong></p>
@@ -101,7 +103,7 @@ function configurarFormulario() {
             e.preventDefault();
             const mma20Val = parseFloat(document.getElementById('mma20').value);
             const mma50Val = parseFloat(document.getElementById('mma50').value);
-            ejecutarPredicaoReal(mma20Val, mma50Val);
+            executarPredicaoReal(mma20Val, mma50Val);
         });
     }
 }
