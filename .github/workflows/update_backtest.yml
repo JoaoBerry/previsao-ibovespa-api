@@ -1,0 +1,26 @@
+name: Atualizar Backtest
+on:
+  schedule:
+    - cron: '0 8 * * *' # Roda todo dia às 08:00 UTC
+  workflow_dispatch: # Permite rodar manualmente pelo botão no GitHub
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install pandas numpy yfinance joblib
+      - name: Run backtest
+        run: python gerar_backtest.py
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add backtest_results.json
+          git commit -m "Auto-atualização do Backtest" || exit 0
+          git push
