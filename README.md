@@ -1,69 +1,27 @@
-# Ibovespa AI Predictor 📈🤖
+# Ibovespa AI Predictor 🚀
 
-Uma aplicação fullstack orientada a dados (MLES) que coleta dados em tempo real da Bolsa de Valores (B3), calcula indicadores técnicos e utiliza um modelo de Machine Learning para prever a tendência do índice Ibovespa.
+Uma aplicação Full-Stack MLOps que realiza a predição de tendências do índice Ibovespa utilizando Machine Learning, integrada a dados financeiros em tempo real e visualização dinâmica.
 
----
+## 📈 Funcionalidades
+- **Predição Inteligente:** Modelo Random Forest treinado para classificar tendências (Alta/Baixa).
+- **Dados em Tempo Real:** Integração automática com a API do Yahoo Finance para coleta de indicadores (MMA_20 e MMA_50).
+- **Dashboard Interativo:** Visualização de séries temporais históricas utilizando ApexCharts.
+- **Análise de Confiança:** Cálculo de probabilidade da predição via `predict_proba`.
 
-## 🏗️ Arquitetura do Sistema
+## 🛠️ Stack Tecnológica
+- **Machine Learning:** Scikit-Learn, Pandas, NumPy.
+- **Backend:** FastAPI (Python), CORS, Render (Cloud Deployment).
+- **Frontend:** HTML5, Tailwind CSS, JavaScript, ApexCharts.
+- **DevOps:** GitHub Pages para hospedagem estática.
 
-O projeto foi desenhado seguindo as melhores práticas de engenharia de machine learning (MLOps), dividindo-se em três camadas principais:
+## 🚀 Como acessar
+Acesse o dashboard em tempo real aqui: [https://joaoberry.github.io/previsao-ibovespa-api/]
 
-1. **Pipeline de Dados & IA (Backend):** Uma API desenvolvida em **FastAPI** que encapsula um modelo preditivo **RandomForestClassifier** (treinado previamente via Scikit-Learn). O backend consome a API do Yahoo Finance (`yfinance`) para obter dados históricos reais e calcular as médias móveis dinamicamente.
-2. **Interface do Usuário (Frontend):** Um dashboard responsivo construído com **HTML5**, **JavaScript Vanilla (Async/Fetch)** e **Tailwind CSS**, que consome os microsserviços do backend.
-3. **Automação:** Carregamento automático dos dados de fechamento do mercado atual ao abrir a tela, permitindo também simulações manuais através do painel.
+## 🛠️ Como rodar localmente (Desenvolvimento)
+1. Clone o repositório.
+2. **Backend:**
+   ```bash
+   pip install fastapi uvicorn yfinance scikit-learn joblib
+   uvicorn main:app --reload
 
----
-
-## 🛠️ Tecnologias Utilizadas
-
-* **Python 3**
-* **FastAPI** (Construção da API REST)
-* **Scikit-Learn & Joblib** (Inteligência Artificial e persistência de modelo)
-* **YFinance** (Coleta de dados financeiros em tempo real)
-* **Tailwind CSS** (Estilização da interface)
-* **Uvicorn** (Servidor ASGI)
-
----
-
-## 📂 Estrutura do Projeto
-
-```text
-previsao-ibovespa-api/
-├── frontend/
-│   ├── index.html        # Interface visual do Dashboard
-│   └── app.js            # Lógica de integração e Fetch com a API
-├── modelos/
-│   └── modelo_ibov.pkl   # Arquivo físico do modelo RandomForest
-├── main.py               # Servidor Backend FastAPI com as rotas
-└── README.md             # Documentação do projeto
-```
-
----
-
-## 🚀 Como Executar o Projeto
-
-### 1. Clonar o Repositório e Instalar Dependências
-
-Para rodar este projeto localmente, clone o repositório e instale as dependências listadas abaixo:
-
-```bash
-git clone [https://github.com/JoaoBerry/previsao-ibovespa-api.git](https://github.com/seu-usuario/previsao-ibovespa-api.git)
-cd previsao-ibovespa-api
-pip install fastapi uvicorn joblib numpy scikit-learn yfinance requests
-```
-
-### 2. Iniciar o Servidor da API (Backend)
-
-Inicie o servidor local através do Uvicorn executando o seguinte comando no terminal:
-
-```bash
-uvicorn main:app --reload
-```
-
-A API estará rodando ativamente no endereço: `http://127.0.0.1:8000`
-
-### 3. Abrir o Dashboard (Frontend)
-
-Com o backend ligado, abra o arquivo `frontend/index.html` utilizando a extensão **Live Server** do VS Code ou executando o arquivo diretamente no navegador de sua preferência. A aplicação carregará e consumirá automaticamente os dados atualizados do mercado financeiro.
-
-<img width="1375" height="1266" alt="Captura de tela 2026-06-25 212208" src="https://github.com/user-attachments/assets/5b81ef34-b4f0-4fdf-b265-a00c784a7460" />
+<img width="1550" height="1261" alt="Captura de tela 2026-06-26 002756" src="https://github.com/user-attachments/assets/17772fb0-e286-4f7b-adba-3c8c4c69b3da" />
