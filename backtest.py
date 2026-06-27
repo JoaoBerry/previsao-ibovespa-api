@@ -6,14 +6,14 @@ from datetime import datetime
 def rodar_backtest():
     print("🤖 Iniciando cálculo real do Backtest...")
     
-    # 1. Baixa os dados do Ibovespa (Mudamos para 2 anos para ter uma base de teste melhor)
+    # 1. Baixa os dados do Ibovespa (2 anos para ter uma boa base histórica)
     ticker = yf.Ticker("^BVSP")
     df = ticker.history(period="2y")
     
     if df.empty:
         return {"error": "Dados indisponíveis"}
     
-    # 2. Calcula os novos indicadores técnicos (Alinhado com o main.py)
+    # 2. Calcula os indicadores técnicos (idêntico ao main.py)
     df['MMA_20'] = df['Close'].rolling(window=20).mean()
     df['MMA_50'] = df['Close'].rolling(window=50).mean()
     df['Retorno'] = df['Close'].pct_change()
@@ -25,7 +25,7 @@ def rodar_backtest():
     rs = ganho / (perda + 1e-10)
     df['RSI'] = 100 - (100 / (1 + rs))
     
-    # Remove os valores nulos gerados pelos cálculos de janela
+    # Remove os valores nulos gerados pelas janelas iniciais (rolling)
     df = df.dropna()
     
     # 3. Lógica do Sinal e do Target Real
@@ -36,7 +36,6 @@ def rodar_backtest():
     df['Target_Real'] = (df['Close'].shift(-1) > df['Close']).astype(int)
     
     # Acurácia: Quantas vezes o nosso Sinal bateu com o movimento real do dia seguinte
-    # (Removemos a última linha pois não sabemos o amanhã do último dia útil ainda)
     df_valido = df.dropna().copy()
     acertos = (df_valido['Sinal'] == df_valido['Target_Real']).sum()
     total = len(df_valido)
@@ -51,13 +50,23 @@ def rodar_backtest():
     df_valido['Estrategia_Retorno'] = df_valido['Estrategia_Retorno'].fillna(0)
     df_valido['Retorno_IA_Acumulado'] = (1 + df_valido['Estrategia_Retorno']).cumprod() - 1
     
-    # Pegamos os últimos 30 dias para exibir no gráfico do Frontend
+    # Seleciona os últimos 30 dias para exibir no gráfico do Frontend
     df_recente = df_valido.tail(30)
     
     # 5. Formata o resultado final estruturado em JSON
     resultado = {
-        "acuracia": round(acuracia_real, 3), # Ex: 0.714
+        "acuracia": round(acuracia_real, 3),
         "retorno_ia": f"+{round(df_valido['Retorno_IA_Acumulado'].iloc[-1] * 100, 1)}%",
         "retorno_ibov": f"+{round(df_valido['Retorno_BH_Acumulado'].iloc[-1] * 100, 1)}%",
         "data_atualizacao": datetime.now().strftime("%d/%m/%Y"),
-        "evolucao":
+        "evolucao": [
+            {
+                "data": idx.strftime("%Y-%m-%d"), 
+                "estrategia": round(float(row['Retorno_IA_Acumulado'] * 100), 2), 
+                "buy_and_hold": round(float(row['Retorno_BH_Acumulado'] * 100), 2)
+            } 
+            for idx, row in df_recente.iterrows()
+        ]
+    }
+    
+    return resultado
