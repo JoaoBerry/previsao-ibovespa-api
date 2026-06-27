@@ -1,32 +1,63 @@
 import pandas as pd
 import yfinance as yf
+import numpy as np
+from datetime import datetime
 
 def rodar_backtest():
-    # 1. Baixa os dados do Ibovespa
-    ticker = yf.Ticker("^BVSP")
-    df = ticker.history(period="1y")
+    print("🤖 Iniciando cálculo real do Backtest...")
     
-    # 2. Calcula indicadores
+    # 1. Baixa os dados do Ibovespa (Mudamos para 2 anos para ter uma base de teste melhor)
+    ticker = yf.Ticker("^BVSP")
+    df = ticker.history(period="2y")
+    
+    if df.empty:
+        return {"error": "Dados indisponíveis"}
+    
+    # 2. Calcula os novos indicadores técnicos (Alinhado com o main.py)
     df['MMA_20'] = df['Close'].rolling(window=20).mean()
     df['MMA_50'] = df['Close'].rolling(window=50).mean()
+    df['Retorno'] = df['Close'].pct_change()
     
-    # 3. Lógica de cálculo (Simulação)
-    # Exemplo: O sinal é 1 se MMA_20 > MMA_50, senão 0
+    # Cálculo do RSI de 14 dias
+    delta = df['Close'].diff()
+    ganho = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+    perda = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+    rs = ganho / (perda + 1e-10)
+    df['RSI'] = 100 - (100 / (1 + rs))
+    
+    # Remove os valores nulos gerados pelos cálculos de janela
+    df = df.dropna()
+    
+    # 3. Lógica do Sinal e do Target Real
+    # Sinal do cruzamento de médias (1 se MMA_20 > MMA_50, senão 0)
     df['Sinal'] = (df['MMA_20'] > df['MMA_50']).astype(int)
     
-    # 4. Formata o resultado para o frontend
-    # Limitando aos últimos 30 dias para não ficar pesado
+    # Target Real: O mercado realmente SUBIU no dia seguinte? (1 se sim, 0 se não)
+    df['Target_Real'] = (df['Close'].shift(-1) > df['Close']).astype(int)
+    
+    # Acurácia: Quantas vezes o nosso Sinal bateu com o movimento real do dia seguinte
+    # (Removemos a última linha pois não sabemos o amanhã do último dia útil ainda)
+    df_valido = df.dropna().copy()
+    acertos = (df_valido['Sinal'] == df_valido['Target_Real']).sum()
+    total = len(df_valido)
+    acuracia_real = float(acertos / total) if total > 0 else 0.50
+    
+    # 4. Simulação de Performance Financeira (Retorno Acumulado)
+    # Retorno da estratégia Buy & Hold (Apenas segurar o ativo)
+    df_valido['Retorno_BH_Acumulado'] = (1 + df_valido['Retorno']).cumprod() - 1
+    
+    # Retorno da Estratégia da IA (Se o sinal de hoje for 1, pegamos o retorno de amanhã. Se for 0, rendimento é 0)
+    df_valido['Estrategia_Retorno'] = df_valido['Sinal'].shift(1) * df_valido['Retorno']
+    df_valido['Estrategia_Retorno'] = df_valido['Estrategia_Retorno'].fillna(0)
+    df_valido['Retorno_IA_Acumulado'] = (1 + df_valido['Estrategia_Retorno']).cumprod() - 1
+    
+    # Pegamos os últimos 30 dias para exibir no gráfico do Frontend
+    df_recente = df_valido.tail(30)
+    
+    # 5. Formata o resultado final estruturado em JSON
     resultado = {
-        "acuracia_backtest": 0.68,
-        "retorno_modelo_pct": 12.4,
-        "retorno_bh_pct": 7.2,
-        "evolucao": [
-            {
-                "data": i.strftime("%Y-%m-%d"), 
-                "estrategia": float(r['Close']), 
-                "buy_and_hold": float(r['Close'])
-            } 
-            for i, r in df.tail(30).iterrows()
-        ]
-    }
-    return resultado
+        "acuracia": round(acuracia_real, 3), # Ex: 0.714
+        "retorno_ia": f"+{round(df_valido['Retorno_IA_Acumulado'].iloc[-1] * 100, 1)}%",
+        "retorno_ibov": f"+{round(df_valido['Retorno_BH_Acumulado'].iloc[-1] * 100, 1)}%",
+        "data_atualizacao": datetime.now().strftime("%d/%m/%Y"),
+        "evolucao":
