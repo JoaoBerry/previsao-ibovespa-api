@@ -1,5 +1,5 @@
 // Configuração base da URL da sua API local (mude se fizer deploy no Render/Railway)
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = 'https://previsao-ibovespa-api.onrender.com';
 
 // Inicializa a aplicação quando a árvore DOM estiver pronta
 window.addEventListener('DOMContentLoaded', () => {
