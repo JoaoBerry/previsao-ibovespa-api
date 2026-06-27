@@ -7,6 +7,7 @@ Uma aplicação Full-Stack MLOps que realiza a predição de tendências do índ
 - **Dados em Tempo Real:** Integração automática com a API do Yahoo Finance para coleta de indicadores (MMA_20 e MMA_50).
 - **Dashboard Interativo:** Visualização de séries temporais históricas utilizando ApexCharts.
 - **Análise de Confiança:** Cálculo de probabilidade da predição via `predict_proba`.
+- **Simulador Dinâmico:** Permite alterar manualmente os valores das Médias Móveis (MMA_20 e MMA_50) para testar tomadas de decisão da IA em diferentes cenários de mercado.
 
 ## 🛠️ Stack Tecnológica
 - **Machine Learning:** Scikit-Learn, Pandas, NumPy.
@@ -24,4 +25,4 @@ Acesse o dashboard em tempo real aqui: [https://JoaoBerry.github.io/previsao-ibo
    pip install fastapi uvicorn yfinance scikit-learn joblib
    uvicorn main:app --reload
 
-<img width="1550" height="1261" alt="Captura de tela 2026-06-26 002756" src="https://github.com/user-attachments/assets/17772fb0-e286-4f7b-adba-3c8c4c69b3da" />
+<img width="1777" height="1266" alt="Captura de tela 2026-06-27 010946" src="https://github.com/user-attachments/assets/f7c55048-b374-4bcb-ba56-241d1b64503e" />
