@@ -25,23 +25,31 @@ def home():
 def obter_dados():
     try:
         ticker = yf.Ticker("^BVSP")
-        df = ticker.history(period="3mo")
+        # Buscamos 1 ano para garantir histórico de sobra para calcular a média de 50 dias
+        df = ticker.history(period="1y")
         if df.empty:
             return {"error": "Dados indisponíveis no Yahoo Finance"}
         
+        # Calcula as médias móveis no histórico completo
         df['MMA_20'] = df['Close'].rolling(20).mean()
         df['MMA_50'] = df['Close'].rolling(50).mean()
         
+        # Agora limpamos os NaN e pegamos os últimos 30 dias úteis para o gráfico
         df_limpo = df.dropna()
         df_recent = df_limpo.tail(30)
         
-        historico = [{"data": i.strftime("%Y-%m-%d"), "fechamento": float(r['Close'])} for i, r in df_recent.iterrows()]
+        # Montamos o histórico incluindo o preço de fechamento E as duas médias de cada dia
+        historico = [{
+            "data": i.strftime("%Y-%m-%d"), 
+            "fechamento": float(r['Close']),
+            "mma20": float(r['MMA_20']),
+            "mma50": float(r['MMA_50'])
+        } for i, r in df_recent.iterrows()]
         
         return {
             "mma_20": float(df_limpo['MMA_20'].iloc[-1]),
             "mma_50": float(df_limpo['MMA_50'].iloc[-1]),
             "historico": historico,
-            # NOVOS DADOS PARA O BACKTESTING:
             "acuracia": "74%",
             "retorno_ia": "+18.5%",
             "retorno_ibov": "+11.2%"
