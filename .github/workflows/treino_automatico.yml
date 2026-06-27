@@ -1,0 +1,41 @@
+name: MLOps - Retreino Semanal Automatizado
+
+on:
+  schedule:
+    # Roda todos os sábados à meia-noite (UTC)
+    - cron: '0 0 * * 6'
+  workflow_dispatch: # Permite que você clique em um botão na aba Actions e force o treino quando quiser
+
+jobs:
+  retrain:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do repositório
+      uses: actions/checkout@v3
+
+    - name: Configurar ambiente Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Instalar dependências
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Executar Pipeline de Treinamento e Backtest
+      run: |
+        python gerar_backtest.py
+
+    - name: Publicar atualizações de MLOps no repositório
+      run: |
+        git config --global user.name "GitHub MLOps Bot"
+        git config --global user.email "mlops-bot@github.com"
+        
+        # Adiciona o modelo atualizado e o arquivo de métricas de backtest
+        git add modelos/*.joblib backtest_results.json
+        
+        # Só realiza o commit caso os dados gerados tenham mudado
+        git diff-index --quiet HEAD || git commit -m "🤖 MLOps: Modelo preditivo e Backtest atualizados via automação"
+        git push
