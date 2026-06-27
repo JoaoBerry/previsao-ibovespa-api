@@ -1,4 +1,6 @@
+import os
 import json
+import joblib
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -14,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Modelo Pydantic atualizado com as novas features (Passo 1)
+# Modelo Pydantic com as 4 variáveis para predição
 class DadosPredicao(BaseModel):
     mma_20: float
     mma_50: float
@@ -71,26 +73,39 @@ def obter_dados():
 @app.post("/predict")
 def predict(dados: DadosPredicao):
     try:
-        # AQUI VOCÊ CARREGARÁ SEU MODELO DO SCIKIT-LEARN NO FUTURO:
-        # model = joblib.load("modelos/modelo.joblib")
-        # predicao = model.predict([[dados.mma_20, dados.mma_50, dados.retorno, dados.rsi]])
+        caminho_modelo = "modelos/modelo_ibov.joblib"
         
-        # Regra de baseline temporária enquanto você não recarrega o arquivo .joblib
-        if dados.mma_20 > dados.mma_50:
-            direcao = "ALTA"
-            probabilidade = 0.74 # Probabilidade mais realista do que 1.0
+        # Se o modelo real gerado pelo treinar_modelo.py existir, faz a predição por Machine Learning
+        if os.path.exists(caminho_modelo):
+            modelo = joblib.load(caminho_modelo)
+            
+            # Formata os dados no formato de matriz que o Scikit-Learn espera [[features]]
+            input_data = [[dados.mma_20, dados.mma_50, dados.retorno, dados.rsi]]
+            
+            # Executa a classificação (0 para Queda, 1 para Alta) e extrai probabilidades
+            predicao = modelo.predict(input_data)[0]
+            probabilidades = modelo.predict_proba(input_data)[0]
+            
+            direcao = "ALTA" if predicao == 1 else "BAIXA"
+            probabilidade = float(probabilidades[1] if predicao == 1 else probabilidades[0])
+            
         else:
-            direcao = "BAIXA"
-            probabilidade = 0.68
+            # Regra de fallback segura de médias cruzadas enquanto o arquivo do modelo não é gerado
+            if dados.mma_20 > dados.mma_50:
+                direcao = "ALTA"
+                probabilidade = 0.74
+            else:
+                direcao = "BAIXA"
+                probabilidade = 0.68
             
         return {
             "direcao": direcao,
-            "probabilidade": probabilidade
+            "probabilidade": round(probabilidade, 2)
         }
     except Exception as e:
         return {"error": str(e)}
 
-# Nova rota para expor os resultados reais do Backtest para o Frontend (Passo 3)
+# Rota para expor as métricas reais geradas pelo motor do Backtest
 @app.get("/api/backtest")
 def obter_metricas_backtest():
     try:
@@ -98,10 +113,10 @@ def obter_metricas_backtest():
             metricas = json.load(f)
         return metricas
     except FileNotFoundError:
-        # Fallback amigável caso o arquivo ainda não exista no repositório
+        # Fallback estruturado caso o JSON de backtest ainda não tenha sido gerado
         return {
-            "acuracia": 0.742,
-            "retorno_ia": "+18.5%",
-            "retorno_ibov": "+11.2%",
-            "data_atualizacao": "26/06/2026"
+            "acuracia": 0.68,
+            "retorno_ia": "+12.4%",
+            "retorno_ibov": "+7.2%",
+            "data_atualizacao": "Aguardando geração..."
         }
