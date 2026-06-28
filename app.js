@@ -76,7 +76,7 @@ async function executarPredicao(mma20Val, mma50Val, retornoVal = 0.001, rsiVal =
             body: JSON.stringify({
                 mma_20: mma20Val,
                 mma_50: mma50Val,
-                returno: retornoVal,
+                retorno: retornoVal, // payload corrigido para "retorno"
                 rsi: rsiVal
             })
         });
@@ -86,16 +86,18 @@ async function executarPredicao(mma20Val, mma50Val, retornoVal = 0.001, rsiVal =
         if (resultado && resultado.direcao) {
             txtDirecao.innerText = `Tendência de ${resultado.direcao}`;
             
-            // FORÇANDO A CONFIANÇA EM 100%
+            // Forçando a confiança visual para 100%
             txtProbabilidade.innerText = "Confiança do Modelo: 100%";
             
             // Alterna dinamicamente a estilização e o emoji baseado no viés de mercado
             if (resultado.direcao === 'ALTA') {
                 txtDirecao.className = "text-xl font-black text-emerald-400";
-                if (divEmoji) divEmoji.innerText = "🚀"; // Altera para Foguete em ALTA
+                if (divEmoji) divEmoji.innerText = "🚀"; // Foguete em ALTA
             } else {
                 txtDirecao.className = "text-xl font-black text-rose-400";
-                if (divEmoji) divEmoji.innerText = "❌"; // Altera para X em BAIXA
+                // --- NOVO EMOJI AQUI ---
+                if (divEmoji) divEmoji.innerText = "📉"; // Gráfico descendo em BAIXA
+                // -----------------------
             }
         }
     } catch (error) {
