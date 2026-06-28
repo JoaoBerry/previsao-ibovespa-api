@@ -24,6 +24,7 @@ class DadosPredicao(BaseModel):
     rsi: float
 
 @app.get("/")
+@app.head("/")
 def home():
     return {"status": "online"}
 
