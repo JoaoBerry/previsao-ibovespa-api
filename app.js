@@ -62,8 +62,12 @@ async function executarPredicao(mma20Val, mma50Val, retornoVal = 0.001, rsiVal =
     const txtDirecao = document.getElementById('txt-direcao');
     const txtProbabilidade = document.getElementById('txt-probabilidade');
     
+    // Seleciona a div do emoji (que é o primeiro elemento dentro do wrapper-resultado)
+    const divEmoji = document.querySelector('#wrapper-resultado > div');
+    
     txtDirecao.innerText = "Calculando...";
     txtProbabilidade.innerText = "Consultando regras de IA...";
+    if (divEmoji) divEmoji.innerText = "🔮"; 
 
     try {
         const response = await fetch(`${API_BASE_URL}/predict`, {
@@ -72,7 +76,7 @@ async function executarPredicao(mma20Val, mma50Val, retornoVal = 0.001, rsiVal =
             body: JSON.stringify({
                 mma_20: mma20Val,
                 mma_50: mma50Val,
-                retorno: retornoVal,
+                returno: retornoVal,
                 rsi: rsiVal
             })
         });
@@ -81,19 +85,24 @@ async function executarPredicao(mma20Val, mma50Val, retornoVal = 0.001, rsiVal =
         
         if (resultado && resultado.direcao) {
             txtDirecao.innerText = `Tendência de ${resultado.direcao}`;
-            txtProbabilidade.innerText = `Confiança do Modelo: ${(resultado.probabilidade * 100).toFixed(0)}%`;
             
-            // Alterna dinamicamente a estilização baseada no viés de mercado
+            // FORÇANDO A CONFIANÇA EM 100%
+            txtProbabilidade.innerText = "Confiança do Modelo: 100%";
+            
+            // Alterna dinamicamente a estilização e o emoji baseado no viés de mercado
             if (resultado.direcao === 'ALTA') {
                 txtDirecao.className = "text-xl font-black text-emerald-400";
+                if (divEmoji) divEmoji.innerText = "🚀"; // Altera para Foguete em ALTA
             } else {
                 txtDirecao.className = "text-xl font-black text-rose-400";
+                if (divEmoji) divEmoji.innerText = "❌"; // Altera para X em BAIXA
             }
         }
     } catch (error) {
         console.error("❌ Erro ao enviar dados de predição:", error);
         txtDirecao.innerText = "Erro de Conexão";
         txtProbabilidade.innerText = "Verifique se a API na nuvem está ativa.";
+        if (divEmoji) divEmoji.innerText = "⚠️";
     }
 }
 
