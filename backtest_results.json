@@ -1,9 +1,14 @@
 {
-    "acuracia": 0.509,
+    "acuracia": 0.51,
     "retorno_ia": "+18.2%",
-    "retorno_ibov": "+37.3%",
-    "data_atualizacao": "01/09/2026",
+    "retorno_ibov": "+38.6%",
+    "data_atualizacao": "02/09/2026",
     "evolucao": [
+        {
+            "data": "2026-07-21",
+            "estrategia": 21.99,
+            "buy_and_hold": 33.65
+        },
         {
             "data": "2026-07-22",
             "estrategia": 24.96,
@@ -140,11 +145,6 @@
             "buy_and_hold": 35.05
         },
         {
-            "data": "2026-08-28",
-            "estrategia": 18.19,
-            "buy_and_hold": 35.46
-        },
-        {
             "data": "2026-08-31",
             "estrategia": 18.19,
             "buy_and_hold": 36.81
@@ -152,7 +152,7 @@
         {
             "data": "2026-09-01",
             "estrategia": 18.19,
-            "buy_and_hold": 37.31
+            "buy_and_hold": 38.59
         }
     ]
 }
