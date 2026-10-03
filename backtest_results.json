@@ -1,8 +1,8 @@
 {
-    "acuracia": 0.509,
-    "retorno_ia": "+19.1%",
-    "retorno_ibov": "+44.4%",
-    "data_atualizacao": "02/10/2026",
+    "acuracia": 0.511,
+    "retorno_ia": "+22.3%",
+    "retorno_ibov": "+48.2%",
+    "data_atualizacao": "03/10/2026",
     "evolucao": [
         {
             "data": "2026-08-21",
@@ -151,8 +151,8 @@
         },
         {
             "data": "2026-10-02",
-            "estrategia": 19.12,
-            "buy_and_hold": 44.36
+            "estrategia": 22.32,
+            "buy_and_hold": 48.24
         }
     ]
 }
