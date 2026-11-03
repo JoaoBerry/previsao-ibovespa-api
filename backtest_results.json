@@ -1,158 +1,158 @@
 {
     "acuracia": 0.506,
-    "retorno_ia": "+6.9%",
-    "retorno_ibov": "+40.8%",
-    "data_atualizacao": "02/11/2026",
+    "retorno_ia": "+5.5%",
+    "retorno_ibov": "+35.4%",
+    "data_atualizacao": "03/11/2026",
     "evolucao": [
-        {
-            "data": "2026-09-18",
-            "estrategia": 17.94,
-            "buy_and_hold": 55.26
-        },
         {
             "data": "2026-09-21",
             "estrategia": 18.81,
-            "buy_and_hold": 56.41
+            "buy_and_hold": 52.51
         },
         {
             "data": "2026-09-22",
             "estrategia": 19.33,
-            "buy_and_hold": 57.1
+            "buy_and_hold": 53.19
         },
         {
             "data": "2026-09-23",
             "estrategia": 18.31,
-            "buy_and_hold": 55.75
+            "buy_and_hold": 51.87
         },
         {
             "data": "2026-09-24",
             "estrategia": 17.13,
-            "buy_and_hold": 54.21
+            "buy_and_hold": 50.36
         },
         {
             "data": "2026-09-25",
             "estrategia": 16.82,
-            "buy_and_hold": 53.8
+            "buy_and_hold": 49.96
         },
         {
             "data": "2026-09-28",
             "estrategia": 16.51,
-            "buy_and_hold": 53.39
+            "buy_and_hold": 49.56
         },
         {
             "data": "2026-09-29",
             "estrategia": 17.04,
-            "buy_and_hold": 54.09
+            "buy_and_hold": 50.25
         },
         {
             "data": "2026-09-30",
             "estrategia": 18.64,
-            "buy_and_hold": 56.2
+            "buy_and_hold": 52.3
         },
         {
             "data": "2026-10-01",
             "estrategia": 19.19,
-            "buy_and_hold": 56.91
+            "buy_and_hold": 53.0
         },
         {
             "data": "2026-10-02",
             "estrategia": 22.32,
-            "buy_and_hold": 61.04
+            "buy_and_hold": 57.02
         },
         {
             "data": "2026-10-05",
             "estrategia": 31.74,
-            "buy_and_hold": 73.44
+            "buy_and_hold": 69.11
         },
         {
             "data": "2026-10-06",
             "estrategia": 31.06,
-            "buy_and_hold": 72.54
+            "buy_and_hold": 68.23
         },
         {
             "data": "2026-10-07",
             "estrategia": 30.08,
-            "buy_and_hold": 71.25
+            "buy_and_hold": 66.98
         },
         {
             "data": "2026-10-08",
             "estrategia": 31.3,
-            "buy_and_hold": 72.86
+            "buy_and_hold": 68.55
         },
         {
             "data": "2026-10-09",
             "estrategia": 33.11,
-            "buy_and_hold": 75.25
+            "buy_and_hold": 70.88
         },
         {
             "data": "2026-10-13",
             "estrategia": 31.73,
-            "buy_and_hold": 73.42
+            "buy_and_hold": 69.1
         },
         {
             "data": "2026-10-14",
             "estrategia": 31.48,
-            "buy_and_hold": 73.1
+            "buy_and_hold": 68.78
         },
         {
             "data": "2026-10-15",
             "estrategia": 30.09,
-            "buy_and_hold": 71.27
+            "buy_and_hold": 67.0
         },
         {
             "data": "2026-10-16",
             "estrategia": 30.8,
-            "buy_and_hold": 72.2
+            "buy_and_hold": 67.9
         },
         {
             "data": "2026-10-19",
             "estrategia": 30.58,
-            "buy_and_hold": 71.9
+            "buy_and_hold": 67.62
         },
         {
             "data": "2026-10-20",
             "estrategia": 32.62,
-            "buy_and_hold": 74.6
+            "buy_and_hold": 70.25
         },
         {
             "data": "2026-10-21",
             "estrategia": 31.48,
-            "buy_and_hold": 73.09
+            "buy_and_hold": 68.77
         },
         {
             "data": "2026-10-22",
             "estrategia": 29.96,
-            "buy_and_hold": 71.1
+            "buy_and_hold": 66.83
         },
         {
             "data": "2026-10-23",
             "estrategia": 30.58,
-            "buy_and_hold": 71.91
+            "buy_and_hold": 67.62
         },
         {
             "data": "2026-10-26",
             "estrategia": 12.45,
-            "buy_and_hold": 48.04
+            "buy_and_hold": 44.35
         },
         {
             "data": "2026-10-27",
             "estrategia": 11.88,
-            "buy_and_hold": 47.29
+            "buy_and_hold": 43.61
         },
         {
             "data": "2026-10-28",
             "estrategia": 8.88,
-            "buy_and_hold": 43.34
+            "buy_and_hold": 39.77
         },
         {
             "data": "2026-10-29",
             "estrategia": 7.72,
-            "buy_and_hold": 41.82
+            "buy_and_hold": 38.28
         },
         {
             "data": "2026-10-30",
             "estrategia": 6.92,
-            "buy_and_hold": 40.76
+            "buy_and_hold": 37.25
+        },
+        {
+            "data": "2026-11-03",
+            "estrategia": 5.45,
+            "buy_and_hold": 35.37
         }
     ]
 }
